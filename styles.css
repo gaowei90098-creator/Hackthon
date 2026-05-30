@@ -38,6 +38,13 @@ a {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+.web-frame {
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #101512;
+}
+
 .hatch-page,
 .jiro-landing {
   min-height: 100dvh;
@@ -66,7 +73,7 @@ a {
   z-index: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   filter: saturate(1.05) contrast(1.03);
 }
 
@@ -76,6 +83,12 @@ a {
   background:
     linear-gradient(90deg, rgba(255, 253, 248, 0.78) 0%, rgba(255, 253, 248, 0.34) 52%, rgba(255, 253, 248, 0.16) 100%),
     linear-gradient(180deg, rgba(255, 253, 248, 0.52) 0%, rgba(255, 253, 248, 0.08) 46%, rgba(232, 241, 237, 0.34) 100%);
+}
+
+.world-video-tint.is-soft {
+  background:
+    linear-gradient(90deg, rgba(16, 21, 18, 0.5) 0%, rgba(16, 21, 18, 0.08) 44%, rgba(16, 21, 18, 0.18) 100%),
+    linear-gradient(180deg, rgba(16, 21, 18, 0.24) 0%, rgba(255, 253, 248, 0.02) 48%, rgba(16, 21, 18, 0.26) 100%);
 }
 
 .stage-canvas {
@@ -93,6 +106,133 @@ body[data-scene="pet"] .stage-canvas {
   z-index: 2;
   height: 100%;
   object-fit: cover;
+}
+
+.world-page,
+.world-hero {
+  min-height: 100dvh;
+}
+
+.world-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 253, 248, 0.08), transparent 62%),
+    #101512;
+  color: #ffffff;
+}
+
+.world-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+}
+
+.world-nav {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 44px 0;
+  color: #18201b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.world-nav div {
+  display: flex;
+  gap: 22px;
+}
+
+.world-copy {
+  position: relative;
+  z-index: 4;
+  width: min(460px, 42vw);
+  padding: clamp(82px, 10vh, 116px) 0 0 44px;
+  color: #1a1a1a;
+}
+
+.world-copy-compact {
+  width: min(420px, 38vw);
+}
+
+.world-copy h1 {
+  margin: 10px 0 0;
+  font-size: clamp(56px, 7vw, 104px);
+  font-weight: 850;
+  line-height: 0.9;
+}
+
+.world-copy p:not(.eyebrow) {
+  max-width: 35ch;
+  margin: 22px 0 0;
+  color: rgba(26, 26, 26, 0.78);
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.world-copy .primary-action {
+  margin-top: 26px;
+}
+
+.world-panel {
+  position: absolute;
+  right: 42px;
+  bottom: 34px;
+  z-index: 4;
+  width: min(320px, 32vw);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: rgba(255, 253, 248, 0.54);
+  color: #1a1a1a;
+  padding: 18px 20px;
+  backdrop-filter: blur(14px);
+}
+
+.world-panel-wide {
+  width: min(430px, 38vw);
+}
+
+.world-panel span {
+  color: #58705e;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+}
+
+.world-panel p {
+  margin: 10px 0 0;
+  color: rgba(26, 26, 26, 0.76);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+body[data-scene="world"] .world-nav,
+body[data-scene="world"] .world-copy {
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+}
+
+body[data-scene="world"] .world-copy p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+body[data-scene="world"] .green,
+body[data-scene="world"] .world-panel span {
+  color: #d7f0ce;
+}
+
+body[data-scene="world"] .world-panel {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(16, 21, 18, 0.48);
+  color: #ffffff;
+}
+
+body[data-scene="world"] .world-panel p {
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .top-nav {
@@ -240,5 +380,34 @@ body[data-scene="pet"] .stage-canvas {
     overflow: hidden;
     border-radius: 32px;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@media (min-width: 480px) {
+  body[data-scene="pet"],
+  body[data-scene="world"] {
+    display: block;
+  }
+}
+
+@media (max-width: 760px) {
+  .world-nav {
+    padding: 22px 20px 0;
+  }
+
+  .world-copy {
+    width: auto;
+    padding: 74px 20px 0;
+  }
+
+  .world-copy h1 {
+    font-size: 48px;
+  }
+
+  .world-panel {
+    right: 20px;
+    bottom: 22px;
+    left: 20px;
+    width: auto;
   }
 }

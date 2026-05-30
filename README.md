@@ -4,7 +4,8 @@
 
 - `index.html`：孵化页
 - `reveal.html`：蛋壳破碎，小猫出现
-- `pet.html`：视频世界背景，小猫随机走动
+- `pet.html`：横屏视频世界背景，小猫随机走动
+- `world.html`：新功能横屏页面
 
 使用方式：
 

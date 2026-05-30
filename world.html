@@ -3,33 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Another Me · Pet</title>
+    <title>Another Me · World</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body data-scene="pet">
+  <body data-scene="world">
     <main class="web-frame world-page">
       <section class="world-hero">
         <video class="world-video-bg" autoplay muted loop playsinline preload="auto">
           <source src="./world/world-background.mp4" type="video/mp4" />
         </video>
-        <div class="world-video-tint" aria-hidden="true"></div>
+        <div class="world-video-tint is-soft" aria-hidden="true"></div>
         <canvas id="stage" class="world-canvas" width="1280" height="720" aria-hidden="true"></canvas>
         <nav class="world-nav" aria-label="主要导航">
-          <a href="./index.html">ANOTHER ME</a>
+          <a href="./pet.html">ANOTHER ME</a>
           <div>
-            <a href="./world.html">新世界</a>
+            <a href="./pet.html">小猫</a>
             <a href="./index.html">孵化</a>
           </div>
         </nav>
-        <div class="world-copy">
-          <p class="eyebrow green">EMOTION COMPANION</p>
-          <h1>Another Me</h1>
-          <p>把情绪放进这个世界里，小猫会在你的场景中自由走动、停留、观察，然后用自己的节奏靠近。</p>
-          <a href="./world.html" class="primary-action">开发新功能</a>
+        <div class="world-copy world-copy-compact">
+          <p class="eyebrow green">NEW FEATURE SPACE</p>
+          <h1>情绪世界</h1>
+          <p>这是新的功能页面。视频完整铺在 Web 横屏舞台里，小猫会在世界中随机走动，不再被手机框限制。</p>
         </div>
-        <div class="world-panel" aria-label="世界状态">
-          <span>LIVE WORLD</span>
-          <p>小猫正在背景世界里随机探索</p>
+        <div class="world-panel world-panel-wide" aria-label="功能状态">
+          <span>PROTOTYPE</span>
+          <p>后续功能入口可以从这里接入：互动点、任务、道具、记忆事件。</p>
         </div>
       </section>
     </main>

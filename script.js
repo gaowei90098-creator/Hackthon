@@ -539,15 +539,19 @@ const walker = {
 };
 
 function chooseWalkTarget(elapsed) {
-  let targetX = randomBetween(220, 560);
+  const minX = SCENE.width * 0.2;
+  const maxX = SCENE.width * 0.82;
+  let targetX = randomBetween(minX, maxX);
   if (Math.abs(targetX - walker.x) < 120) {
-    targetX = walker.x < 360 ? randomBetween(430, 560) : randomBetween(220, 310);
+    targetX = walker.x < SCENE.width * 0.5
+      ? randomBetween(SCENE.width * 0.58, maxX)
+      : randomBetween(minX, SCENE.width * 0.38);
   }
 
   walker.startX = walker.x;
   walker.startBottom = walker.bottom;
   walker.targetX = targetX;
-  walker.targetBottom = randomBetween(592, 660);
+  walker.targetBottom = randomBetween(SCENE.height * 0.78, SCENE.height * 0.92);
   walker.startAt = elapsed;
   walker.endAt = elapsed + randomBetween(2100, 3800);
   walker.waitUntil = walker.endAt + randomBetween(700, 1700);
@@ -557,8 +561,8 @@ function chooseWalkTarget(elapsed) {
 function updateWalker(elapsed) {
   if (!walker.initialized) {
     walker.initialized = true;
-    walker.x = randomBetween(350, 500);
-    walker.bottom = randomBetween(610, 650);
+    walker.x = randomBetween(SCENE.width * 0.42, SCENE.width * 0.64);
+    walker.bottom = randomBetween(SCENE.height * 0.8, SCENE.height * 0.9);
     walker.waitUntil = elapsed + 650;
     return { moving: false };
   }
@@ -586,8 +590,8 @@ function updateWalker(elapsed) {
 
 function drawPetScene(cat, elapsed) {
   const state = updateWalker(elapsed);
-  const depth = clamp((walker.bottom - 590) / 90);
-  const scale = 0.94 + depth * 0.28;
+  const depth = clamp((walker.bottom - SCENE.height * 0.76) / (SCENE.height * 0.18));
+  const scale = 0.82 + depth * 0.34;
   const bob = state.moving ? Math.sin(elapsed * 0.02) * 4 : Math.sin(elapsed * 0.006) * 5;
   const rotation = state.moving
     ? walker.direction * 0.018 + Math.sin(elapsed * 0.01) * 0.02
@@ -619,10 +623,17 @@ function drawPetScene(cat, elapsed) {
 }
 
 async function start() {
+  if (scene === "pet" || scene === "world") {
+    SCENE.width = 1280;
+    SCENE.height = 720;
+    canvas.width = SCENE.width;
+    canvas.height = SCENE.height;
+  }
+
   ctx.imageSmoothingEnabled = true;
   document.querySelector(".world-video-bg")?.play?.().catch(() => {});
   const needsEgg = scene === "hatch" || scene === "reveal";
-  const needsCat = scene === "reveal" || scene === "pet";
+  const needsCat = scene === "reveal" || scene === "pet" || scene === "world";
   const [egg, cat] = await Promise.all([
     needsEgg ? loadImage(EGG_SRC) : Promise.resolve(null),
     needsCat ? loadImage(CAT_SRC) : Promise.resolve(null),
