@@ -1,11 +1,15 @@
 # Another Me
 
-一个独立的静态宠物落地页，只包含当前小猫网页所需的 HTML、CSS、JavaScript 和 spritesheet 素材。
+一个可直接运行的三页静态网页：
 
-本地预览：
+- `index.html`：孵化页
+- `reveal.html`：蛋壳破碎，小猫出现
+- `pet.html`：小猫落地页
+
+使用方式：
 
 ```bash
-python3 -m http.server 3000
+python3 -m http.server 8088
 ```
 
-然后打开 `http://localhost:3000`。
+然后打开 `http://localhost:8088`。也可以直接双击 `index.html` 预览。
