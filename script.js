@@ -384,12 +384,13 @@ function drawFragments(elapsed, amount) {
   ctx.restore();
 }
 
-function drawPetFrame(image, frame, cx, bottom, scale, extraY = 0, rotation = 0) {
+function drawPetFrame(image, frame, cx, bottom, scale, extraY = 0, rotation = 0, flip = false) {
   const drawWidth = frame.width * scale;
   const drawHeight = frame.height * scale;
   ctx.save();
   ctx.translate(cx, bottom + extraY);
   ctx.rotate(rotation);
+  if (flip) ctx.scale(-1, 1);
   ctx.drawImage(image, frame.x, frame.y, frame.width, frame.height, -drawWidth / 2, -drawHeight, drawWidth, drawHeight);
   ctx.restore();
 }
@@ -519,52 +520,107 @@ function drawPetBackground(elapsed) {
   ctx.globalAlpha = 1;
 }
 
-function drawPetScene(cat, elapsed) {
-  const current = petPhase(elapsed);
-  const bob = Math.sin(elapsed * 0.006) * 6;
-  ctx.clearRect(0, 0, SCENE.width, SCENE.height);
-  drawPetBackground(elapsed);
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
+}
 
-  let cx = 472;
-  let bottom = 640;
-  let scale = 1.2;
-  let rotation = Math.sin(elapsed * 0.002) * 0.025;
+const walker = {
+  initialized: false,
+  x: 472,
+  bottom: 640,
+  startX: 472,
+  startBottom: 640,
+  targetX: 472,
+  targetBottom: 640,
+  startAt: 0,
+  endAt: 0,
+  waitUntil: 0,
+  direction: 1,
+};
 
-  if (current.name === "enter") {
-    cx = lerp(-170, 472, easeOut(current.pt));
-    bottom = lerp(646, 640, easeOut(current.pt));
-    scale = lerp(1.12, 1.2, easeOut(current.pt));
-    rotation = -0.02 + Math.sin(current.pt * Math.PI * 2) * 0.025;
-  } else if (current.name === "greet") {
-    cx = 472 + Math.sin(current.pt * Math.PI * 2) * 10;
-    bottom = 636 - Math.sin(current.pt * Math.PI) * 16;
-    rotation = Math.sin(current.pt * Math.PI * 2) * 0.04;
-  } else if (current.name === "listen") {
-    cx = lerp(472, 452, easeInOut(current.pt));
-    bottom = 640 + Math.sin(current.pt * Math.PI) * 7;
-    rotation = -0.04 * Math.sin(current.pt * Math.PI);
-  } else if (current.name === "comfort") {
-    cx = lerp(452, 476, easeInOut(current.pt));
-    bottom = 642 - Math.sin(current.pt * Math.PI) * 8;
-    scale = 1.2 + Math.sin(current.pt * Math.PI) * 0.04;
+function chooseWalkTarget(elapsed) {
+  let targetX = randomBetween(220, 560);
+  if (Math.abs(targetX - walker.x) < 120) {
+    targetX = walker.x < 360 ? randomBetween(430, 560) : randomBetween(220, 310);
   }
 
-  ctx.fillStyle = "rgba(26,26,26,0.13)";
+  walker.startX = walker.x;
+  walker.startBottom = walker.bottom;
+  walker.targetX = targetX;
+  walker.targetBottom = randomBetween(592, 660);
+  walker.startAt = elapsed;
+  walker.endAt = elapsed + randomBetween(2100, 3800);
+  walker.waitUntil = walker.endAt + randomBetween(700, 1700);
+  walker.direction = walker.targetX >= walker.startX ? 1 : -1;
+}
+
+function updateWalker(elapsed) {
+  if (!walker.initialized) {
+    walker.initialized = true;
+    walker.x = randomBetween(350, 500);
+    walker.bottom = randomBetween(610, 650);
+    walker.waitUntil = elapsed + 650;
+    return { moving: false };
+  }
+
+  if (elapsed < walker.waitUntil && elapsed >= walker.endAt) {
+    return { moving: false };
+  }
+
+  if (elapsed >= walker.waitUntil) {
+    chooseWalkTarget(elapsed);
+  }
+
+  const amount = clamp((elapsed - walker.startAt) / (walker.endAt - walker.startAt));
+  if (amount >= 1) {
+    walker.x = walker.targetX;
+    walker.bottom = walker.targetBottom;
+    return { moving: false };
+  }
+
+  const eased = easeInOut(amount);
+  walker.x = lerp(walker.startX, walker.targetX, eased);
+  walker.bottom = lerp(walker.startBottom, walker.targetBottom, eased);
+  return { moving: true };
+}
+
+function drawPetScene(cat, elapsed) {
+  const state = updateWalker(elapsed);
+  const depth = clamp((walker.bottom - 590) / 90);
+  const scale = 0.94 + depth * 0.28;
+  const bob = state.moving ? Math.sin(elapsed * 0.02) * 4 : Math.sin(elapsed * 0.006) * 5;
+  const rotation = state.moving
+    ? walker.direction * 0.018 + Math.sin(elapsed * 0.01) * 0.02
+    : Math.sin(elapsed * 0.002) * 0.022;
+  const sequence = state.moving
+    ? SEQ.enter
+    : elapsed % 7600 < 1300
+      ? SEQ.greet
+      : elapsed % 7600 < 3800
+        ? SEQ.thinking
+        : SEQ.calm;
+
+  ctx.clearRect(0, 0, SCENE.width, SCENE.height);
+  ctx.fillStyle = "rgba(26,26,26,0.18)";
   ctx.beginPath();
-  ctx.ellipse(cx, bottom + 9, 120, 25, 0, 0, Math.PI * 2);
+  ctx.ellipse(walker.x, walker.bottom + 9, 98 * scale, 22 * scale, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  let sequence = SEQ.calm;
-  if (current.name === "enter") sequence = SEQ.enter;
-  else if (current.name === "greet") sequence = SEQ.greet;
-  else if (current.name === "listen") sequence = SEQ.thinking;
-  else if (current.name === "comfort") sequence = SEQ.comfort;
-
-  drawPetFrame(cat, frameAt(sequence, elapsed), cx, bottom, scale, bob, rotation);
+  drawPetFrame(
+    cat,
+    frameAt(sequence, elapsed * (state.moving ? 1.15 : 1)),
+    walker.x,
+    walker.bottom,
+    scale,
+    bob,
+    rotation,
+    walker.direction < 0,
+  );
 }
 
 async function start() {
   ctx.imageSmoothingEnabled = true;
+  document.querySelector(".world-video-bg")?.play?.().catch(() => {});
   const needsEgg = scene === "hatch" || scene === "reveal";
   const needsCat = scene === "reveal" || scene === "pet";
   const [egg, cat] = await Promise.all([
